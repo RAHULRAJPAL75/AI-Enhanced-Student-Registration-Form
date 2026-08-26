@@ -9,8 +9,13 @@ import Student from "../models/Student.js";
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const uploadsDirectory = path.join(__dirname, "..", "uploads");
-fs.mkdirSync(uploadsDirectory, { recursive: true });
+const uploadsDirectory = process.env.VERCEL ? "/tmp" : path.join(__dirname, "..", "uploads");
+
+try {
+  fs.mkdirSync(uploadsDirectory, { recursive: true });
+} catch (e) {
+  // Ignore on read-only serverless filesystems
+}
 
 // Set up multer storage
 const storage = multer.diskStorage({
