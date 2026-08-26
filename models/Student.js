@@ -25,6 +25,49 @@ const studentSchema = new mongoose.Schema(
       enum: ["student", "instructor", "admin"],
       default: "student",
     },
+    resetCode: {
+      type: String,
+      select: false,
+      default: undefined,
+    },
+    resetCodeExpires: {
+      type: Date,
+      select: false,
+      default: undefined,
+    },
+    bio: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    stats: {
+      type: Array,
+      default: [],
+    },
+    skills: {
+      type: Array,
+      default: [],
+    },
+    tools: {
+      type: Array,
+      default: [],
+    },
+    projects: {
+      type: Array,
+      default: [],
+    },
+    certs: {
+      type: Array,
+      default: [],
+    },
+    roadmap: {
+      type: Array,
+      default: [],
+    },
+    profileImage: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,
