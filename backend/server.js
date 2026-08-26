@@ -41,6 +41,30 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api", authRoutes);
 app.use("/api/ai", aiRoutes);
 
+// Database Connection helper (cached for serverless)
+let isConnected = false;
+const connectDB = async () => {
+  if (isConnected || mongoose.connection.readyState === 1) {
+    isConnected = true;
+    return;
+  }
+  try {
+    const db = await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
+    isConnected = db.connections[0].readyState === 1;
+    console.log("Connected to MongoDB Database successfully!");
+  } catch (err) {
+    console.error("❌ MongoDB Connection Error:", err.message);
+  }
+};
+
+// Connect DB on startup / invocation middleware
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
+
 // Root Endpoint
 app.get("/", (req, res) => {
   res.json({
@@ -58,22 +82,12 @@ app.get("/api/server-health", (req, res) => {
   });
 });
 
-// Database Connection
-mongoose
-  .connect(MONGO_URI)
-  .then(() => {
-    console.log("==========================================");
-    console.log(" Connected to MongoDB Database successfully!");
-    console.log("==========================================");
-  })
-  .catch((err) => {
-    console.error("❌ MongoDB Connection Error:", err.message);
-  });
-
-// Start local server if not running as serverless function
-if (process.env.NODE_ENV !== "production" || process.env.VERCEL !== "1") {
-  app.listen(PORT, () => {
-    console.log(`🚀 Node.js Backend Server listening at http://localhost:${PORT}`);
+// Start local server if not in serverless runtime
+if (!process.env.VERCEL) {
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Node.js Backend Server listening at http://localhost:${PORT}`);
+    });
   });
 }
 
