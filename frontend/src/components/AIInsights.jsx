@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+const API_BASE_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api`;
+
 const defaultFallbackInsights = [
   "Welcome to your workspace command center. Monitor student registrations and sprint readiness.",
   "Check the Students tab to search, edit, or export student records.",
@@ -21,7 +23,7 @@ export default function AIInsights({ currentUser }) {
       return;
     }
 
-    fetch("http://localhost:5000/api/ai/insights", {
+    fetch(`${API_BASE_URL}/ai/insights`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ studentId }),

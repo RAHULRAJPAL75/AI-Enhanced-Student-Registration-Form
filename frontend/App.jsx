@@ -52,7 +52,7 @@ const stats = [
   { value: "1", label: "student workspace" },
 ];
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api`;
 const emptyStudentForm = { name: "", email: "", password: "" };
 
 const getExportRows = (students) => students.map((student, index) => ({
@@ -659,7 +659,7 @@ function StudentChatPanel({ currentUser, studentCount = 0 }) {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/ai/status")
+    fetch(`${API_BASE_URL}/ai/status`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -686,7 +686,7 @@ function StudentChatPanel({ currentUser, studentCount = 0 }) {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/ai/chat", {
+      const res = await fetch(`${API_BASE_URL}/ai/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -28,11 +28,7 @@ export function DashboardTopbar({
     setIsExportMenuOpen(false);
   };
 
-  const profileImageSrc = profileImage
-    ? profileImage.startsWith("/")
-      ? `http://localhost:5000${profileImage}`
-      : profileImage
-    : "";
+  const profileImageSrc = getProfileImageUrl(profileImage);
 
   return (
     <header className="db-topbar">

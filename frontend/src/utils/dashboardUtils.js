@@ -39,8 +39,9 @@ export function getProfileImageUrl(profileImage) {
     return "";
   }
 
+  const apiOrigin = import.meta.env.VITE_API_URL || "http://localhost:5000";
   return profileImage.startsWith("/")
-    ? `http://localhost:5000${profileImage}`
+    ? `${apiOrigin}${profileImage}`
     : profileImage;
 }
 

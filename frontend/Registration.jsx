@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+const API_BASE_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api`;
+
 function Registration({ onSuccess }) {
   const [student, setStudent] = useState({
     name: "",
@@ -26,7 +28,7 @@ function Registration({ onSuccess }) {
     setSuccessMsg("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/register", {
+      const response = await fetch(`${API_BASE_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
