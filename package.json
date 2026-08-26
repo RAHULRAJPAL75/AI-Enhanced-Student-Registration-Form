@@ -1,0 +1,16 @@
+{
+  "name": "simple-student-registration-form",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "backend": "npm run start --prefix backend",
+    "frontend": "npm run dev --prefix frontend",
+    "dev": "npm run dev --prefix frontend",
+    "start": "npm run start --prefix backend",
+    "test": "npm run test --prefix frontend"
+  },
+  "dependencies": {
+    "multer": "^2.0.2"
+  }
+}
