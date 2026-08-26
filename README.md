@@ -393,6 +393,12 @@ Never commit `.env` files or API keys to source control.
 
 ## Setup
 
+#### Vercel deployment
+
+Deploy from the repository root so Vercel uses the root `vercel.json` and installs both the frontend and backend dependencies. The backend can also be deployed as a separate Vercel project with `backend` as its Root Directory; in that case Vercel uses `backend/vercel.json`.
+
+For either setup, add `MONGO_URI` and any other backend secrets in Vercel Project Settings > Environment Variables, then redeploy the current branch. A deployment log mentioning `models/Student.mjs` is from an older or different source tree; the current backend entrypoint is `backend/server.js` and the model is `backend/models/Student.js`.
+
 ### Prerequisites
 
 - Node.js 18 or newer
