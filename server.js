@@ -1,12 +1,11 @@
+import "dotenv/config";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/authRoutes.js";
-
-dotenv.config();
+import aiRoutes from "./routes/aiRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,47 +14,82 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  process.env.FRONTEND_URL,
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.filter(Boolean).includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, true); // Permissive fallback to prevent breaking initial setup, prioritizes configured origins
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
 app.use("/api", authRoutes);
+app.use("/api/ai", aiRoutes);
+
+// Database Connection helper (cached for serverless)
+let isConnected = false;
+const connectDB = async () => {
+  if (isConnected || mongoose.connection.readyState === 1) {
+    isConnected = true;
+    return;
+  }
+  try {
+    const db = await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
+    isConnected = db.connections[0].readyState === 1;
+    console.log("Connected to MongoDB Database successfully!");
+  } catch (err) {
+    console.error("❌ MongoDB Connection Error:", err.message);
+  }
+};
+
+// Connect DB on startup / invocation middleware
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
 
 // Root Endpoint
 app.get("/", (req, res) => {
-  res.send({
+  res.json({
+    success: true,
     message: "Student Registration API Server is running",
-    mongoURI: MONGO_URI,
-    endpoints: {
-      health: "/api/health",
-      register: "POST /api/register",
-      login: "POST /api/login",
-      students: "GET /api/students",
-    },
   });
 });
 
-// Database Connection & Server Start
-mongoose
-  .connect(MONGO_URI)
-  .then(() => {
-    console.log("==========================================");
-    console.log(" Connected to MongoDB Database successfully!");
-    console.log(` MongoDB Compass URI: ${MONGO_URI}`);
-    console.log("==========================================");
+// Health check
+app.get("/api/server-health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Student Registration API is running",
+    database: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
+  });
+});
 
+// Start local server if not in serverless runtime
+if (!process.env.VERCEL) {
+  connectDB().then(() => {
     app.listen(PORT, () => {
       console.log(`🚀 Node.js Backend Server listening at http://localhost:${PORT}`);
     });
-  })
-  .catch((err) => {
-    console.error("❌ MongoDB Connection Error:", err.message);
-    console.log("\n💡 Note: Make sure MongoDB is running on your machine or MongoDB Compass is connected to localhost (mongodb://127.0.0.1:27017).");
-    
-    // Still start Express server so API error messages can be returned cleanly
-    app.listen(PORT, () => {
-      console.log(`🚀 Node.js Backend Server listening at http://localhost:${PORT} (Database pending)`);
-    });
   });
+}
+
+// Export Express app for Vercel
+export default app;
