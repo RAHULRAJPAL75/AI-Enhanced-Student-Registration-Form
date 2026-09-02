@@ -857,6 +857,18 @@ function StudentExperience({
   const profileImageSrc = getProfileImageUrl(currentUser?.profileImage);
   const [activeStudentView, setActiveStudentView] = useState("dashboard");
   const [isStudentExportMenuOpen, setIsStudentExportMenuOpen] = useState(false);
+  const studentExportMenuRef = useRef(null);
+
+  useEffect(() => {
+    const closeStudentExportMenu = (event) => {
+      if (!studentExportMenuRef.current?.contains(event.target)) {
+        setIsStudentExportMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", closeStudentExportMenu);
+    return () => document.removeEventListener("mousedown", closeStudentExportMenu);
+  }, []);
 
   const handleStudentExport = (format) => {
     exportStudentsFile([currentUser], format, toast);
@@ -1180,11 +1192,12 @@ function StudentExperience({
             <button className="db-icon-btn" onClick={fetchStudents} title="Refresh data" type="button">
               <DashboardIcon name="refresh" />
             </button>
-            <div className="db-export-menu">
+            <div className="db-export-menu" ref={studentExportMenuRef}>
               <button
                 aria-expanded={isStudentExportMenuOpen}
                 aria-haspopup="menu"
                 className="db-secondary-action"
+                aria-label="Export my profile"
                 onClick={() => setIsStudentExportMenuOpen((isOpen) => !isOpen)}
                 type="button"
               >

@@ -3281,6 +3281,7 @@ img {
 
 .db-export-menu {
   position: relative;
+  z-index: 40;
 }
 
 .db-export-chevron {
