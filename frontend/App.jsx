@@ -856,6 +856,12 @@ function StudentExperience({
   const joinedDate = formatStudentDate(currentUser?.createdAt, "long");
   const profileImageSrc = getProfileImageUrl(currentUser?.profileImage);
   const [activeStudentView, setActiveStudentView] = useState("dashboard");
+  const [isStudentExportMenuOpen, setIsStudentExportMenuOpen] = useState(false);
+
+  const handleStudentExport = (format) => {
+    exportStudentsFile([currentUser], format, toast);
+    setIsStudentExportMenuOpen(false);
+  };
 
   const progressCards = [
     { value: "86%", label: "Course progress" },
@@ -1174,15 +1180,35 @@ function StudentExperience({
             <button className="db-icon-btn" onClick={fetchStudents} title="Refresh data" type="button">
               <DashboardIcon name="refresh" />
             </button>
-            <button
-              className="db-secondary-action"
-              disabled={studentsList.length === 0}
-              onClick={exportStudents}
-              type="button"
-            >
-              <DashboardIcon name="download" />
-              Export
-            </button>
+            <div className="db-export-menu">
+              <button
+                aria-expanded={isStudentExportMenuOpen}
+                aria-haspopup="menu"
+                className="db-secondary-action"
+                onClick={() => setIsStudentExportMenuOpen((isOpen) => !isOpen)}
+                type="button"
+              >
+                <DashboardIcon name="download" />
+                Export
+                <span className="db-export-chevron" aria-hidden="true">▾</span>
+              </button>
+              {isStudentExportMenuOpen && (
+                <div className="db-export-dropdown" role="menu">
+                  <button onClick={() => handleStudentExport("csv")} role="menuitem" type="button">
+                    <strong>CSV</strong>
+                    <span>My profile record</span>
+                  </button>
+                  <button onClick={() => handleStudentExport("excel")} role="menuitem" type="button">
+                    <strong>Microsoft Excel</strong>
+                    <span>My profile record</span>
+                  </button>
+                  <button onClick={() => handleStudentExport("pdf")} role="menuitem" type="button">
+                    <strong>PDF</strong>
+                    <span>My profile record</span>
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               className="db-avatar db-avatar-btn"
               title="Go to Profile"
