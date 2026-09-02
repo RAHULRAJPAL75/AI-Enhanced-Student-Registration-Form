@@ -6,6 +6,7 @@ export function DashboardTopbar({
   viewMeta,
   fetchStudents,
   exportStudents,
+  isAdminUser,
   studentsListLength,
   setActiveView,
   displayName,
@@ -42,36 +43,38 @@ export function DashboardTopbar({
         <button className="db-icon-btn" onClick={fetchStudents} title="Refresh data" type="button">
           <DashboardIcon name="refresh" />
         </button>
-        <div className="db-export-menu" ref={exportMenuRef}>
-          <button
-            aria-expanded={isExportMenuOpen}
-            aria-haspopup="menu"
-            className="db-secondary-action"
-            disabled={studentsListLength === 0}
-            onClick={() => setIsExportMenuOpen((isOpen) => !isOpen)}
-            type="button"
-          >
-            <DashboardIcon name="download" />
-            Export
-            <span className="db-export-chevron" aria-hidden="true">▾</span>
-          </button>
-          {isExportMenuOpen && (
-            <div className="db-export-dropdown" role="menu">
-              <button onClick={() => handleExport("csv")} role="menuitem" type="button">
-                <strong>CSV</strong>
-                <span>Comma-separated values</span>
-              </button>
-              <button onClick={() => handleExport("excel")} role="menuitem" type="button">
-                <strong>Microsoft Excel</strong>
-                <span>Editable .xlsx workbook</span>
-              </button>
-              <button onClick={() => handleExport("pdf")} role="menuitem" type="button">
-                <strong>PDF</strong>
-                <span>Printable records report</span>
-              </button>
-            </div>
-          )}
-        </div>
+        {isAdminUser && (
+          <div className="db-export-menu" ref={exportMenuRef}>
+            <button
+              aria-expanded={isExportMenuOpen}
+              aria-haspopup="menu"
+              className="db-secondary-action"
+              disabled={studentsListLength === 0}
+              onClick={() => setIsExportMenuOpen((isOpen) => !isOpen)}
+              type="button"
+            >
+              <DashboardIcon name="download" />
+              Export
+              <span className="db-export-chevron" aria-hidden="true">▾</span>
+            </button>
+            {isExportMenuOpen && (
+              <div className="db-export-dropdown" role="menu">
+                <button onClick={() => handleExport("csv")} role="menuitem" type="button">
+                  <strong>CSV</strong>
+                  <span>Comma-separated values</span>
+                </button>
+                <button onClick={() => handleExport("excel")} role="menuitem" type="button">
+                  <strong>Microsoft Excel</strong>
+                  <span>Editable .xlsx workbook</span>
+                </button>
+                <button onClick={() => handleExport("pdf")} role="menuitem" type="button">
+                  <strong>PDF</strong>
+                  <span>Printable records report</span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
         <button
           className="db-avatar db-avatar-btn"
           title="Go to Profile"

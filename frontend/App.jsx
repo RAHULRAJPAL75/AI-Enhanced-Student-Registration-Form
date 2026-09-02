@@ -144,10 +144,12 @@ function App() {
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn && currentUser?.role === "admin") {
       fetchStudents();
+    } else if (!isLoggedIn || currentUser?.role !== "admin") {
+      setStudentsList([]);
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, currentUser?.role]);
 
   const handleAuthSuccess = (studentData) => {
     setCurrentUser(studentData);
@@ -894,24 +896,6 @@ function StudentExperience({
       );
     }
 
-    if (activeStudentView === "students") {
-      return (
-        <StudentsView
-          filteredStudents={filteredStudents}
-          studentCount={studentsList.length}
-          studentsLoading={studentsLoading}
-          studentSearch={studentSearch}
-          setStudentSearch={setStudentSearch}
-          exportStudents={exportStudents}
-          isAdminUser={currentUser?.role === "admin"}
-          openCreateStudent={openCreateStudent}
-          openEditStudent={openEditStudent}
-          openDeleteConfirm={openDeleteConfirm}
-          studentDeletingId={studentDeletingId}
-        />
-      );
-    }
-
     if (activeStudentView === "courses") {
       return (
         <section className="db-dashboard-grid" style={{ marginTop: "30px" }}>
@@ -1005,14 +989,11 @@ function StudentExperience({
             </span>
             <h2>Welcome back, {firstName}</h2>
             <p>
-              Manage your personal profile, view learning roadmap, or access student records directory below.
+              Manage your personal profile, view learning roadmap, and keep your account details current.
             </p>
             <div className="db-hero-actions">
               <button className="db-primary-action" type="button" onClick={() => setActiveStudentView("profile")}>
                 View my profile
-              </button>
-              <button className="db-secondary-action" type="button" onClick={() => setActiveStudentView("students")}>
-                Student Records
               </button>
             </div>
           </div>
@@ -1132,14 +1113,6 @@ function StudentExperience({
           >
             <DashboardIcon name="profile" />
             Profile
-          </button>
-          <button
-            className={`db-sidenav-link${activeStudentView === "students" ? " is-active" : ""}`}
-            type="button"
-            onClick={() => setActiveStudentView("students")}
-          >
-            <DashboardIcon name="users" />
-            Student Records
           </button>
           <button
             className={`db-sidenav-link${activeStudentView === "courses" ? " is-active" : ""}`}
@@ -1386,6 +1359,7 @@ function DashboardExperience({
           viewMeta={viewMeta}
           fetchStudents={fetchStudents}
           exportStudents={exportStudents}
+          isAdminUser={isAdminUser}
           studentsListLength={studentsList.length}
           setActiveView={setActiveView}
           displayName={displayName}
