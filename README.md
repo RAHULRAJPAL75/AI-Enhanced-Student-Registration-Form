@@ -393,11 +393,18 @@ Never commit `.env` files or API keys to source control.
 
 ## Setup
 
-#### Vercel deployment
+#### Netlify frontend + Render backend deployment
 
-Deploy from the repository root so Vercel uses the root `vercel.json` and installs both the frontend and backend dependencies. The backend can also be deployed as a separate Vercel project with `backend` as its Root Directory; in that case Vercel uses `backend/vercel.json`.
+This repository includes `netlify.toml` and `render.yaml` for the recommended split deployment. Netlify hosts the React/Vite frontend, while Render runs the Express API.
 
-For either setup, add `MONGO_URI` and any other backend secrets in Vercel Project Settings > Environment Variables, then redeploy the current branch. A deployment log mentioning `models/Student.mjs` is from an older or different source tree; the current backend entrypoint is `backend/server.js` and the model is `backend/models/Student.js`.
+1. Push the repository to GitHub and import it into Netlify.
+2. Netlify reads `netlify.toml`. The effective settings are Base directory `frontend`, Build command `npm ci && npm run build`, and Publish directory `dist` relative to the base directory.
+3. Deploy the backend on Render using the Blueprint file `render.yaml`, or create a Web Service with Root Directory `backend`, Build command `npm ci`, Start command `npm start`, and Health Check Path `/api/server-health`.
+4. In Render, add the secret environment variables `MONGO_URI`, `GROQ_API_KEY`, `RESEND_API_KEY`, and `EMAIL_FROM`. Add `FRONTEND_URL` with the Netlify site URL. Never put these values in frontend code.
+5. In Netlify, open Site configuration > Environment variables and add `VITE_API_URL` with the Render backend origin, for example `https://student-registration-api.onrender.com`. Do not append `/api`; the frontend adds that path itself.
+6. Trigger a new Netlify deploy after saving the variable. Test the backend at `https://your-render-service.onrender.com/api/server-health`, then open the Netlify URL and test registration and login.
+
+The first Render deploy may take a short time to wake up on the free tier. Uploaded profile images are stored on the backend filesystem and may not persist across service restarts; use object storage for permanent production uploads.
 
 ### Prerequisites
 

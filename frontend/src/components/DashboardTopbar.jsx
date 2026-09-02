@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { DashboardIcon } from "./DashboardCommon";
-import { getInitials } from "../utils/dashboardUtils";
+import { getInitials, getProfileImageUrl } from "../utils/dashboardUtils";
 
 export function DashboardTopbar({
   viewMeta,

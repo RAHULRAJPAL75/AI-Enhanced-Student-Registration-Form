@@ -1441,6 +1441,12 @@ function DashboardExperience({
           <ActivityView
             joinedDate={joinedDate}
             sprintReadiness={sprintReadiness}
+            studentsList={studentsList}
+            registrationBars={registrationBars}
+            studentCount={studentCount}
+            recentStudentCount={recentStudentCount}
+            newestStudent={newestStudent}
+            currentUser={currentUser}
           />
         )}
       </main>

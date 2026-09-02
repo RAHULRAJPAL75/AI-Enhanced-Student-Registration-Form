@@ -82,14 +82,12 @@ app.get("/api/server-health", (req, res) => {
   });
 });
 
-// Start local server if not in serverless runtime
-if (!process.env.VERCEL) {
-  connectDB().then(() => {
-    app.listen(PORT, () => {
-      console.log(`🚀 Node.js Backend Server listening at http://localhost:${PORT}`);
-    });
+// Start the API server for local development and Render.
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`🚀 Node.js Backend Server listening at http://localhost:${PORT}`);
   });
-}
+});
 
-// Export Express app for Vercel
+// Export Express app for integrations that host Node themselves.
 export default app;
